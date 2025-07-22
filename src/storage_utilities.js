@@ -65,7 +65,7 @@ window.addEventListener('message', (event) => {
 export async function initializeStorage() {
     const isDebuggingEnabled = await getFromStorage("isDebuggingEnabled");
     if (isDebuggingEnabled === undefined) {
-        await setInStorage("isDebuggingEnabled", true);
+        await setInStorage("isDebuggingEnabled", false);
         console.log("Initialized debugging mode");
     }
 }
