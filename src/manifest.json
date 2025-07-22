@@ -3,6 +3,8 @@
     "name": "Watched! - Youtube Remove from 'Watch Later' Button",
     "description": "Makes the 'Delete from Watch Later' button easier to click.",
     "version": "1.1",
+    "author": "sebastianhuus",
+    "homepage_url": "https://github.com/sebastianhuus/youtube-remove-watched-videos-button",
     "icons": {
         "16": "icon16.png",
         "32": "icon32.png",
