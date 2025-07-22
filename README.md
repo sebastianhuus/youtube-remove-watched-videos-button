@@ -22,9 +22,9 @@ Make the Watch Later list a bit easier to use.
 6. Select the `src` folder
 
 ### Other browsers
-I dunno, sorry. 
+Installation for Chrome and other Chromium-based browsers follows similar steps to Edge. 
 
-Maybe the docs from the original author of the package I used can help you:
+For detailed instructions on other browsers, refer to the original project documentation:
 https://github.com/lozog/not-interested-youtube
 
 ## Credits!!
