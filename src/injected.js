@@ -1,4 +1,62 @@
-import { getFromStorage, setInStorage, initializeStorage } from './storage_utilities.js';
+// Storage utilities inlined
+let requestId = 0;
+const pendingRequests = new Map();
+
+async function getFromStorage(key, defaultValue = false) {
+    return new Promise((resolve) => {
+        const id = ++requestId;
+        pendingRequests.set(id, resolve);
+        window.postMessage({
+            type: 'getFromStorage',
+            id,
+            key,
+            defaultValue
+        }, '*');
+    });
+}
+
+function setInStorage(key, value) {
+    return new Promise((resolve) => {
+        const id = ++requestId;
+        pendingRequests.set(id, resolve);
+        window.postMessage({
+            type: 'setInStorage',
+            id,
+            key,
+            value
+        }, '*');
+    });
+}
+
+// Listen for responses from content script
+window.addEventListener('message', (event) => {
+    if (event.source != window || !event.data.type) return;
+    
+    if (event.data.type === 'storageResponse' && event.data.id && pendingRequests.has(event.data.id)) {
+        const resolver = pendingRequests.get(event.data.id);
+        
+        if (event.data.error) {
+            console.error("Storage error:", event.data.error);
+        }
+        
+        if ('value' in event.data) {
+            resolver(event.data.value);
+        } else {
+            resolver(event.data.success);
+        }
+        
+        pendingRequests.delete(event.data.id);
+    }
+});
+
+function initializeStorage() {
+    // Set default values if not already set
+    getFromStorage("isDebuggingEnabled").then(value => {
+        if (value === undefined) {
+            setInStorage("isDebuggingEnabled", true); // Enable by default
+        }
+    });
+}
 
 // Initialize storage
 initializeStorage();
@@ -108,7 +166,7 @@ async function addButtons(videoBoxSelector) {
     logger("Adding buttons. . .")
     const watchedButton = {
         onClick: actionWatched(
-            "M11 17H9V8h2v9zm4-9h-2v9h2V8zm4-4v1h-1v16H6V5H5V4h4V3h6v1h4zm-2 1H7v15h10V5z",
+            "M19 3h-4V2a1 1 0 00-1-1h-4a1 1 0 00-1 1v1H5a2 2 0 00-2 2h18a2 2 0 00-2-2ZM6 19V7H4v12a4 4 0 004 4h8a4 4 0 004-4V7h-2v12a2 2 0 01-2 2H8a2 2 0 01-2-2Zm4-11a1 1 0 00-1 1v8a1 1 0 102 0V9a1 1 0 00-1-1Zm4 0a1 1 0 00-1 1v8a1 1 0 002 0V9a1 1 0 00-1-1Z",
             videoBoxSelector
         ),
         cssClass: "btn-top",
@@ -169,8 +227,8 @@ async function addButtons(videoBoxSelector) {
 function actionWatched(svgPath, videoSelector) {
     return (event) => {
         event.preventDefault();
-        event.stopPropagation();
-
+        // Don't stop propagation - it breaks YouTube's event handling
+        
         // Find the actual button element regardless of where inside it was clicked
         const buttonElement = event.target.closest('.watched-button');
         if (!buttonElement) return false;
@@ -225,7 +283,7 @@ function actionWatched(svgPath, videoSelector) {
                 }
             }
 
-            if (!buttonChildIndex) {
+            if (buttonChildIndex === undefined) {
                 logger("Could not find button in DOM");
                 return;
             }
