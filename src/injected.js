@@ -170,7 +170,7 @@ async function addButtons(videoBoxSelector) {
             videoBoxSelector
         ),
         cssClass: "btn-top",
-        svgPath: "M11 17H9V8h2v9zm4-9h-2v9h2V8zm4-4v1h-1v16H6V5H5V4h4V3h6v1h4zm-2 1H7v15h10V5z",
+        svgPath: "M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9zm7.5-5l-1-1h-5l-1 1H5v2h14V4z",
     };
     const buttonsToAdd = [watchedButton];
 
